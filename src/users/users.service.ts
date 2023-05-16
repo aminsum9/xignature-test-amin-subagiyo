@@ -19,18 +19,20 @@ export class UsersService {
     }
 
     getUserById(id: number): Promise<User> {
-        return this.userRepository.findOne({ where: { id: 1 } });
+        return this.userRepository.findOne({ where: { id: id } });
     }
   
-    addUser(newUser: any): void {
-      this.data.push(newUser);
+    async addUser(userData: Partial<User>): Promise<User> {
+        const user = this.userRepository.create(userData);
+        return this.userRepository.save(user);
     }
 
-    updateUser(): string[] {
-      return this.data;
-    }
+    async updateUser(data: Partial<User>): Promise<User> {
+        await this.userRepository.update(data.id, data);
+        return this.userRepository.findOne({ where: { id: data.id } });
+      }
 
-    deleteUser(): string[] {
-      return this.data;
-    }
+    async deleteUser(id: number): Promise<void> {
+        await this.userRepository.delete(id);
+      }
 }
