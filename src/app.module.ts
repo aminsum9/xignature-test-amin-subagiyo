@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Inject, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersController } from './users/users.controller';
@@ -11,19 +11,27 @@ import { JwtService } from './jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
 // 
 import { JwtMiddleware } from './jwt/jwt.middleware';
+import { ConfigModule } from './config.module';
+import { ConfigService } from './config.service';
+
 
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: '',
-      password: '',
-      database: 'postgres',
-      entities: [User],
-      synchronize: true, 
+    ConfigModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: parseInt(configService.get('DB_PORT'), 10),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DATABASE'),
+        entities: [User],
+        synchronize: true,
+      }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User, UserRepository]),
     UsersModule,
@@ -35,6 +43,32 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
   controllers: [AppController, UsersController],
   providers: [AppService, UsersService, UserRepository, JwtService],
 })
+
+// @Module({
+//   imports: [
+//     TypeOrmModule.forRootAsync({
+//       useFactory: () => ({
+//         type: 'postgres',
+//         host: process.env.DB_HOST,
+//         port: parseInt(process.env.DB_PORT, 10),
+//         username: process.env.DB_USERNAME,
+//         password: process.env.DB_PASSWORD,
+//         database: process.env.DB_DATABASE,
+//         entities: [User],
+//         synchronize: true,
+//       }),
+//     }),
+//     TypeOrmModule.forFeature([User, UserRepository]),
+//     UsersModule,
+//     JwtModule.register({
+//       secret: 'rahasia', 
+//       signOptions: { expiresIn: '1h' },
+//     }),
+//   ],
+//   controllers: [AppController, UsersController],
+//   providers: [AppService, UsersService, UserRepository, JwtService],
+// })
+
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
