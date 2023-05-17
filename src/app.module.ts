@@ -5,7 +5,11 @@ import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { UserRepository } from './entities/user.repository';
+import { UserRepository } from './users/users.repository';
+import { UsersModule } from './users/users.module';
+import { JwtService } from './jwt/jwt.service';
+import { JwtModule } from '@nestjs/jwt';
+
 
 @Module({
   imports: [
@@ -20,8 +24,13 @@ import { UserRepository } from './entities/user.repository';
       synchronize: true, 
     }),
     TypeOrmModule.forFeature([User, UserRepository]),
+    UsersModule,
+    JwtModule.register({
+      secret: 'rahasia', 
+      signOptions: { expiresIn: '1h' },
+    }),
   ],
   controllers: [AppController, UsersController],
-  providers: [AppService, UsersService, UserRepository],
+  providers: [AppService, UsersService, UserRepository, JwtService],
 })
 export class AppModule {}

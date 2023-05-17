@@ -1,5 +1,6 @@
 import { Body, Controller, Post, Get, Param, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { JwtService } from '../jwt/jwt.service';
 
 @Controller('users')
 export class UsersController {
@@ -10,6 +11,12 @@ export class UsersController {
     insertUser(@Body() body: any)
     {
         return this.userService.addUser(body);
+    }
+
+    @Post('login')
+    loginUser(@Body() body: any)
+    {
+        return this.userService.loginUser(body);
     }
 
     @Post('update-user')
