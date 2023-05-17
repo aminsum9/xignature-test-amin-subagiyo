@@ -14,8 +14,6 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
 import { ConfigModule } from './config.module';
 import { ConfigService } from './config.service';
 
-
-
 @Module({
   imports: [
     ConfigModule,
@@ -23,11 +21,6 @@ import { ConfigService } from './config.service';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         type: 'postgres',
-        // host: '192.168.200.8',
-        // port: 5432,
-        // username: '',
-        // password: '',
-        // database: 'postgres',
         host: configService.get('DB_HOST'),
         port: parseInt(configService.get('DB_PORT'), 10),
         username: configService.get('DB_USERNAME'),

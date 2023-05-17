@@ -13,6 +13,9 @@ RUN npm install --production
 # Copy the rest of the application code to the working directory
 COPY . .
 
+# Menyalin file .env
+COPY .env ./.env
+
 # Expose port 3000 for the NestJS server
 EXPOSE 3000
 
