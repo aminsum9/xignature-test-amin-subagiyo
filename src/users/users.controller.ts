@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Param, Delete } from '@nestjs/common';
+import { Request, Body, Controller, Post, Get, Param, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtService } from '../jwt/jwt.service';
 
@@ -41,5 +41,11 @@ export class UsersController {
     deleteById(@Body() body: any)
     {
         return this.userService.deleteUser(body.id);
+    }
+
+    @Get('profile')
+    getProfile(@Request() req)
+    {
+        return this.userService.getProfile(req);
     }
 }

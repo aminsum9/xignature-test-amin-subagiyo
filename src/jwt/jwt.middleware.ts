@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
+// import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '../jwt/jwt.service';
 
 interface AuthenticatedRequest extends Request {
     user: {
@@ -19,11 +20,10 @@ export class JwtMiddleware implements NestMiddleware {
   async use(req: AuthenticatedRequest, _: Response, next: NextFunction) {
     // Dapatkan token dari header Authorization
     const token = req.headers.authorization?.split(' ')[1];
-
     if (token) {
       try {
         // Verifikasi dan decode token
-        const decoded = this.jwtService.verify(token);
+        const decoded = this.jwtService.verifyToken(token);
 
         // Tambahkan decoded user ke dalam request
         req.user = decoded;

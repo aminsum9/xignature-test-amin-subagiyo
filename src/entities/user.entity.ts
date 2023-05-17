@@ -14,3 +14,11 @@ export class User {
   @Column({ nullable: false, type: "varchar", default: "" })
   password: string;
 }
+
+export const UserPublic = (user): any => {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  }
+}

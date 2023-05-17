@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { User } from '../entities/user.entity';
+import { Request, BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { User, UserPublic } from '../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserRepository } from './users.repository';
@@ -87,6 +87,15 @@ export class UsersService {
         return {success: true, message: 'berhasil menghapus user'}
     }
 
+    async getProfile(req: any): Promise<any> {
+        const user = await this.userRepository.findOne({ where: { id: req.user.userId } });
+        const response: any = {
+            status: 200,
+            data: UserPublic(user),
+            message: 'success'
+        }
+        return response
+    }
 }
 
 // Validasi password
