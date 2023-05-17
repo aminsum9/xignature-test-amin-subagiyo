@@ -26,6 +26,12 @@ export class UsersService {
     }
 
     async addUser(userData: Partial<User>): Promise<User> {
+
+        // validate empty data
+        if(!userData.name || !userData.email || !userData.password)
+        {
+            throw new BadRequestException('Nama, Email, and Password is required');
+        }
         // Validasi password
         if (!isValidPassword(userData.password)) {
             throw new BadRequestException('Invalid password');
@@ -53,13 +59,32 @@ export class UsersService {
         return {user: userData, token: token };
     }
 
-    async updateUser(data: Partial<User>): Promise<User> {
+    async updateUser(data: Partial<User>): Promise<{success: boolean, message: string, user: User}> {
+        
+        var user = await this.userRepository.findOne({ where: { id: data.id } });
+
+        if(!user)
+        {
+            return {success: false, message: 'user tidak ditemukan!', user: user}
+        }
+
+        
         await this.userRepository.update(data.id, data);
-        return this.userRepository.findOne({ where: { id: data.id } });
+
+        return {success: true, message: 'berhasil mengupdate user', user: user};
     }
 
-    async deleteUser(id: number): Promise<void> {
+    async deleteUser(id: number): Promise<{success: boolean, message: string}> {
+
+        var user = await this.userRepository.findOne({ where: { id: id } });
+
+        if(!user)
+        {
+            return {success: false, message: 'user tidak ditemukan!'}
+        }
+
         await this.userRepository.delete(id);
+        return {success: true, message: 'berhasil menghapus user'}
     }
 
 }

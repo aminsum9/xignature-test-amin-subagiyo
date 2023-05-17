@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersController } from './users/users.controller';
@@ -9,6 +9,8 @@ import { UserRepository } from './users/users.repository';
 import { UsersModule } from './users/users.module';
 import { JwtService } from './jwt/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
+// 
+import { JwtMiddleware } from './jwt/jwt.middleware';
 
 
 @Module({
@@ -33,4 +35,14 @@ import { JwtModule } from '@nestjs/jwt';
   controllers: [AppController, UsersController],
   providers: [AppService, UsersService, UserRepository, JwtService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtMiddleware)
+      .exclude(
+        { path: 'users/login', method: RequestMethod.POST },
+        { path: 'users/add-user', method: RequestMethod.POST },
+      )
+      .forRoutes('*');
+  }
+}
